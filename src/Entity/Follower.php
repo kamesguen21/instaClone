@@ -14,6 +14,7 @@ class Follower
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * test
      */
     private $id;
 
