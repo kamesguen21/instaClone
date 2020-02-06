@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\ORM\Mapping as ORM;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
