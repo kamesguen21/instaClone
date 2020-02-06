@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhotoHashtagRepository")
@@ -15,7 +16,7 @@ class PhotoHashtag
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\hashtag", inversedBy="hashtag", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Hashtag", inversedBy="hashtag", cascade={"persist", "remove"})
      */
     private $hashtag_id;
 

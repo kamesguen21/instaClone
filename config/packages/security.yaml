@@ -8,7 +8,8 @@ security:
             security: false
         main:
             anonymous: lazy
-
+    encoders:
+        App\Entity\User: bcrypt
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
 
