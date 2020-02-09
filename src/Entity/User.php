@@ -99,6 +99,11 @@ class User implements UserInterface
     private $roles;
     private $plainPassword;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true,unique=true)
+     */
+    private $api_token;
+
     public function __construct()
     {
         $this->user_photos = new ArrayCollection();
@@ -108,6 +113,11 @@ class User implements UserInterface
         $this->comments = new ArrayCollection();
         $this->roles = array('ROLE_USER');
 
+    }
+
+    public function __toString()
+    {
+        return $this->getUserName() . $this->getPasswordHash() . $this->getPassword() . $this->getEmail();
     }
 
     public function getPlainPassword()
@@ -412,7 +422,7 @@ class User implements UserInterface
      */
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        return $this->roles;
     }
 
     /**
@@ -425,7 +435,7 @@ class User implements UserInterface
      */
     public function getPassword()
     {
-        // TODO: Implement getPassword() method.
+        return $this->getPasswordHash();
     }
 
     /**
@@ -437,7 +447,7 @@ class User implements UserInterface
      */
     public function getSalt()
     {
-        // TODO: Implement getSalt() method.
+        return $this->getPlainPassword();
     }
 
     /**
@@ -448,7 +458,7 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
+        $this->setPlainPassword(null);
     }
 
     /**
@@ -457,5 +467,17 @@ class User implements UserInterface
     public function setRoles($roles): void
     {
         $this->roles = $roles;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->api_token;
+    }
+
+    public function setApiToken(?string $api_token): self
+    {
+        $this->api_token = $api_token;
+
+        return $this;
     }
 }

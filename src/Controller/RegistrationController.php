@@ -5,14 +5,34 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\type\UserType;
+use App\Security\LoginFormAuthenticator;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
+
 class RegistrationController extends AbstractController
 {
+    private $guardHandler;
+    private $loginFormAuthenticator;
+    private $logger;
+
+    /**
+     * RegistrationController constructor.
+     * @param GuardAuthenticatorHandler $guardHandler
+     * @param LoginFormAuthenticator $loginFormAuthenticator
+     */
+    public function __construct(GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $loginFormAuthenticator, LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+        $this->guardHandler = $guardHandler;
+        $this->loginFormAuthenticator = $loginFormAuthenticator;
+    }
 
     /**
      * @Route("/register", name="user_registration")
@@ -38,11 +58,8 @@ class RegistrationController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+            return $this->redirectToRoute('app_login');
 
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the user
-
-            return $this->redirectToRoute('/');
         }
 
         return $this->render(
