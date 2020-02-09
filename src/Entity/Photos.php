@@ -1,13 +1,21 @@
 <?php
 
 namespace App\Entity;
-use Doctrine\ORM\Mapping as ORM;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use Doctrine\ORM\Mapping as ORM;
+use Exception;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\File\File;
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PhotosRepository")
+ * @Vich\Uploadable
  * @ORM\HasLifecycleCallbacks
  */
 class Photos
@@ -63,7 +71,14 @@ class Photos
      * @ORM\OneToMany(targetEntity="App\Entity\PhotoComment", mappedBy="photo_id")
      */
     private $comments;
-
+    /**
+     * NOTE: This is not a mapped field of entity metadata, just a simple property.
+     *
+     * @Vich\UploadableField(mapping="posts", fileNameProperty="image_path", size="image_size")
+     *
+     * @var File|null
+     */
+    private $imageFile;
 
     public function __construct()
     {
@@ -73,8 +88,33 @@ class Photos
     }
 
     /**
-     * Gets triggered only on insert
+     * If manually uploading a file (i.e. not using Symfony Form) ensure an instance
+     * of 'UploadedFile' is injected into this setter to trigger the update. If this
+     * bundle's configuration parameter 'inject_on_load' is set to 'true' this setter
+     * must be able to accept an instance of 'File' as the bundle will inject one here
+     * during Doctrine hydration.
+     *
+     * @param File|UploadedFile|null $imageFile
+     * @throws Exception
+     */
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
 
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->date_updated = new DateTime("now");
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * Gets triggered only on insert
      * @ORM\PrePersist
      */
     public function onPrePersist()
@@ -86,13 +126,13 @@ class Photos
 
     /**
      * Gets triggered every time on update
-
      * @ORM\PreUpdate
      */
     public function onPreUpdate()
     {
         $this->date_updated = new DateTime("now");
     }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -146,24 +186,24 @@ class Photos
         return $this;
     }
 
-    public function getDateCreated(): ?\DateTimeInterface
+    public function getDateCreated(): ?DateTimeInterface
     {
         return $this->date_created;
     }
 
-    public function setDateCreated(?\DateTimeInterface $date_created): self
+    public function setDateCreated(?DateTimeInterface $date_created): self
     {
         $this->date_created = $date_created;
 
         return $this;
     }
 
-    public function getDateUpdated(): ?\DateTimeInterface
+    public function getDateUpdated(): ?DateTimeInterface
     {
         return $this->date_updated;
     }
 
-    public function setDateUpdated(?\DateTimeInterface $date_updated): self
+    public function setDateUpdated(?DateTimeInterface $date_updated): self
     {
         $this->date_updated = $date_updated;
 

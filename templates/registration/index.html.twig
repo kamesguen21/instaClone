@@ -35,24 +35,24 @@
                             {{ form_start(form) }}
                             <div>
                                 {{ form_widget(form.email, { 'attr': {'class': 'form-control mb-2'} }) }}
-                                {{ form_errors(form.email) }}
                             </div>
                             <div>
                                 {{ form_widget(form.user_name, { 'attr': {'class': 'form-control mb-2'} }) }}
-                                {{ form_errors(form.user_name) }}
                             </div>
                             <div>
                                 {{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control mb-2'} }) }}
-                                {{ form_errors(form.plainPassword.first) }}
                             </div>
                             <div>
                                 {{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control mb-2 '} }) }}
-                                {{ form_errors(form.plainPassword.second) }}
                             </div>
                             <input type="hidden" name="_csrf_token"
                                    value="{{ csrf_token('authenticate') }}"
                             >
                             <button type="submit" class="btn btn-info register-submit">Sign up</button>
+                            {{ form_errors(form.email) }}
+                            {{ form_errors(form.user_name) }}
+                            {{ form_errors(form.plainPassword.first) }}
+                            {{ form_errors(form.plainPassword.second) }}
                             {{ form_end(form) }}
                         </div>
                         <p class="terms">By signing up, you agree to our <strong>Terms</strong> ,<strong> Data

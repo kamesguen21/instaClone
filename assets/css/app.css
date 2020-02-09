@@ -5,6 +5,9 @@ body {
 .register-logo {
     width: 222px;
 }
+.header-logo {
+    width: 150px;
+}
 
 .register-msg {
     font-weight: 600;
