@@ -19,22 +19,23 @@ class HashtagRepository extends ServiceEntityRepository
         parent::__construct($registry, Hashtag::class);
     }
 
-    // /**
-    //  * @return Hashtag[] Returns an array of Hashtag objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $value
+     * @return Hashtag[] Returns an array of Hashtag objects
+     */
+
+    public function findByText($value)
     {
         return $this->createQueryBuilder('h')
-            ->andWhere('h.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('h.text LIKE :val')
+            ->setParameter('val', '%'.$value.'%')
             ->orderBy('h.id', 'ASC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+
 
     /*
     public function findOneBySomeField($value): ?Hashtag

@@ -2,21 +2,31 @@
 
 
 namespace App\Form\type;
+
+use App\Entity\Hashtag;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Vich\UploaderBundle\Form\Type\VichImageType;
+
 class uploadType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('imageFile', VichImageType::class, [
-            'required' => false,
+            'required' => true,
             'allow_delete' => true,
             'download_label' => '...',
             'download_uri' => true,
             'image_uri' => true,
-            'imagine_pattern' => '...',
             'asset_helper' => true,
-        ]);
+        ])->add('caption', TextType::class, array('required' => true, 'label' => 'Caption', 'attr' => array(
+            'placeholder' => 'Caption'
+        )))->add('tagsText', TextType::class, array('required' => true, 'label' => 'Tags', 'attr' => array(
+            'placeholder' => 'Tags'
+        )))->add('setAsProfile', CheckboxType::class,array('required' => false, 'label' => 'set as profile picture'));
+
     }
 }

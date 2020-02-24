@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,9 +28,15 @@ class Hashtag
     private $text;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\PhotoHashtag", mappedBy="hashtag_id", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Photos", mappedBy="hashtags")
      */
-    private $hashtag;
+    private $photos;
+
+    public function __construct()
+    {
+        $this->photos = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -59,21 +67,33 @@ class Hashtag
         return $this;
     }
 
-    public function getHashtag(): ?PhotoHashtag
+    /**
+     * @return Collection|Photos[]
+     */
+    public function getPhotos(): Collection
     {
-        return $this->hashtag;
+        return $this->photos;
     }
 
-    public function setHashtag(?PhotoHashtag $hashtag): self
+    public function addPhoto(Photos $photo): self
     {
-        $this->hashtag = $hashtag;
-
-        // set (or unset) the owning side of the relation if necessary
-        $newHashtag_id = null === $hashtag ? null : $this;
-        if ($hashtag->getHashtagId() !== $newHashtag_id) {
-            $hashtag->setHashtagId($newHashtag_id);
+        if (!$this->photos->contains($photo)) {
+            $this->photos[] = $photo;
+            $photo->addHashtag($this);
         }
 
         return $this;
     }
+
+    public function removePhoto(Photos $photo): self
+    {
+        if ($this->photos->contains($photo)) {
+            $this->photos->removeElement($photo);
+            $photo->removeHashtag($this);
+        }
+
+        return $this;
+    }
+
+
 }

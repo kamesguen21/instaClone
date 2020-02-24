@@ -48,12 +48,6 @@ class User implements UserInterface
      * @ORM\Column(type="text", nullable=true)
      */
     private $bio;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $profil_pic;
-
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -73,22 +67,6 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Likes", mappedBy="user_id")
      */
     private $likes;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\SavedPhotos", inversedBy="user_id")
-     */
-    private $saved_photos;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Following", mappedBy="user_id")
-     */
-    private $followings;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Follower", mappedBy="user_id")
-     */
-    private $followers;
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user_id")
      */
@@ -104,14 +82,36 @@ class User implements UserInterface
      */
     private $api_token;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Photos", cascade={"persist", "remove"})
+     */
+    private $profile_picture;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Photos")
+     */
+    private $saved_Posts;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Follow", mappedBy="follower", orphanRemoval=true)
+     */
+    private $followers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Follow", mappedBy="following", orphanRemoval=true)
+     */
+    private $Followings;
+
+
     public function __construct()
     {
         $this->user_photos = new ArrayCollection();
         $this->likes = new ArrayCollection();
-        $this->followings = new ArrayCollection();
-        $this->followers = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->roles = array('ROLE_USER');
+        $this->saved_Posts = new ArrayCollection();
+        $this->followers = new ArrayCollection();
+        $this->Followings = new ArrayCollection();
 
     }
 
@@ -179,18 +179,6 @@ class User implements UserInterface
     public function setBio(?string $bio): self
     {
         $this->bio = $bio;
-
-        return $this;
-    }
-
-    public function getProfilPic(): ?string
-    {
-        return $this->profil_pic;
-    }
-
-    public function setProfilPic(?string $profil_pic): self
-    {
-        $this->profil_pic = $profil_pic;
 
         return $this;
     }
@@ -301,79 +289,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getSavedPhotos(): ?SavedPhotos
-    {
-        return $this->saved_photos;
-    }
-
-    public function setSavedPhotos(?SavedPhotos $saved_photos): self
-    {
-        $this->saved_photos = $saved_photos;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Following[]
-     */
-    public function getFollowings(): Collection
-    {
-        return $this->followings;
-    }
-
-    public function addFollowing(Following $following): self
-    {
-        if (!$this->followings->contains($following)) {
-            $this->followings[] = $following;
-            $following->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollowing(Following $following): self
-    {
-        if ($this->followings->contains($following)) {
-            $this->followings->removeElement($following);
-            // set the owning side to null (unless already changed)
-            if ($following->getUserId() === $this) {
-                $following->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Follower[]
-     */
-    public function getFollowers(): Collection
-    {
-        return $this->followers;
-    }
-
-    public function addFollower(Follower $follower): self
-    {
-        if (!$this->followers->contains($follower)) {
-            $this->followers[] = $follower;
-            $follower->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollower(Follower $follower): self
-    {
-        if ($this->followers->contains($follower)) {
-            $this->followers->removeElement($follower);
-            // set the owning side to null (unless already changed)
-            if ($follower->getUserId() === $this) {
-                $follower->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection|Comment[]
@@ -477,6 +392,106 @@ class User implements UserInterface
     public function setApiToken(?string $api_token): self
     {
         $this->api_token = $api_token;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?Photos
+    {
+        return $this->profile_picture;
+    }
+
+    public function setProfilePicture(?Photos $profile_picture): self
+    {
+        $this->profile_picture = $profile_picture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Photos[]
+     */
+    public function getSavedPosts(): Collection
+    {
+        return $this->saved_Posts;
+    }
+
+    public function addSavedPost(Photos $savedPost): self
+    {
+        if (!$this->saved_Posts->contains($savedPost)) {
+            $this->saved_Posts[] = $savedPost;
+        }
+
+        return $this;
+    }
+
+    public function removeSavedPost(Photos $savedPost): self
+    {
+        if ($this->saved_Posts->contains($savedPost)) {
+            $this->saved_Posts->removeElement($savedPost);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Follow[]
+     */
+    public function getFollowers(): Collection
+    {
+        return $this->followers;
+    }
+
+    public function addFollower(Follow $follower): self
+    {
+        if (!$this->followers->contains($follower)) {
+            $this->followers[] = $follower;
+            $follower->setFollower($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFollower(Follow $follower): self
+    {
+        if ($this->followers->contains($follower)) {
+            $this->followers->removeElement($follower);
+            // set the owning side to null (unless already changed)
+            if ($follower->getFollower() === $this) {
+                $follower->setFollower(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Follow[]
+     */
+    public function getFollowings(): Collection
+    {
+        return $this->Followings;
+    }
+
+    public function addFollowing(Follow $following): self
+    {
+        if (!$this->Followings->contains($following)) {
+            $this->Followings[] = $following;
+            $following->setFollowing($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFollowing(Follow $following): self
+    {
+        if ($this->Followings->contains($following)) {
+            $this->Followings->removeElement($following);
+            // set the owning side to null (unless already changed)
+            if ($following->getFollowing() === $this) {
+                $following->setFollowing(null);
+            }
+        }
 
         return $this;
     }

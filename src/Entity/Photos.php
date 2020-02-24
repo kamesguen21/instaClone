@@ -51,6 +51,8 @@ class Photos
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $date_created;
+    private $tagsText;
+    private $setAsProfile;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -62,15 +64,7 @@ class Photos
      */
     private $likes;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PhotoHashtag", mappedBy="photo_id")
-     */
-    private $photo_hashtags;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\PhotoComment", mappedBy="photo_id")
-     */
-    private $comments;
     /**
      * NOTE: This is not a mapped field of entity metadata, just a simple property.
      *
@@ -80,11 +74,26 @@ class Photos
      */
     private $imageFile;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Hashtag", inversedBy="photos")
+     */
+    private $hashtags;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="post")
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->likes = new ArrayCollection();
-        $this->photo_hashtags = new ArrayCollection();
+        $this->hashtags = new ArrayCollection();
         $this->comments = new ArrayCollection();
+    }
+
+    public function getSrc()
+    {
+        return '/uploads/images/posts/' . $this->getImagePath();
     }
 
     /**
@@ -158,6 +167,18 @@ class Photos
     public function setCaption(?string $caption): self
     {
         $this->caption = $caption;
+
+        return $this;
+    }
+
+    public function getTagsText(): ?string
+    {
+        return $this->tagsText;
+    }
+
+    public function setTagsText(?string $tagsText): self
+    {
+        $this->tagsText = $tagsText;
 
         return $this;
     }
@@ -241,65 +262,78 @@ class Photos
         return $this;
     }
 
+
     /**
-     * @return Collection|PhotoHashtag[]
+     * @return Collection|Hashtag[]
      */
-    public function getPhotoHashtags(): Collection
+    public function getHashtags(): Collection
     {
-        return $this->photo_hashtags;
+        return $this->hashtags;
     }
 
-    public function addPhotoHashtag(PhotoHashtag $photoHashtag): self
+    public function addHashtag(Hashtag $hashtag): self
     {
-        if (!$this->photo_hashtags->contains($photoHashtag)) {
-            $this->photo_hashtags[] = $photoHashtag;
-            $photoHashtag->setPhotoId($this);
+        if (!$this->hashtags->contains($hashtag)) {
+            $this->hashtags[] = $hashtag;
         }
 
         return $this;
     }
 
-    public function removePhotoHashtag(PhotoHashtag $photoHashtag): self
+    public function removeHashtag(Hashtag $hashtag): self
     {
-        if ($this->photo_hashtags->contains($photoHashtag)) {
-            $this->photo_hashtags->removeElement($photoHashtag);
-            // set the owning side to null (unless already changed)
-            if ($photoHashtag->getPhotoId() === $this) {
-                $photoHashtag->setPhotoId(null);
-            }
+        if ($this->hashtags->contains($hashtag)) {
+            $this->hashtags->removeElement($hashtag);
         }
 
         return $this;
     }
 
     /**
-     * @return Collection|PhotoComment[]
+     * @return Collection|Comment[]
      */
     public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    public function addComment(PhotoComment $comment): self
+    public function addComment(Comment $comment): self
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
-            $comment->setPhotoId($this);
+            $comment->setPost($this);
         }
 
         return $this;
     }
 
-    public function removeComment(PhotoComment $comment): self
+    public function removeComment(Comment $comment): self
     {
         if ($this->comments->contains($comment)) {
             $this->comments->removeElement($comment);
             // set the owning side to null (unless already changed)
-            if ($comment->getPhotoId() === $this) {
-                $comment->setPhotoId(null);
+            if ($comment->getPost() === $this) {
+                $comment->setPost(null);
             }
         }
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSetAsProfile()
+    {
+        return $this->setAsProfile;
+    }
+
+    /**
+     * @param mixed $setAsProfile
+     */
+    public function setSetAsProfile($setAsProfile): void
+    {
+        $this->setAsProfile = $setAsProfile;
+    }
+
 }

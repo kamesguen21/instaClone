@@ -30,8 +30,11 @@
         "symfony/webpack-encore-bundle": "^1.7",
         "symfony/webpack-encore-pack": "^1.0",
         "symfony/yaml": "5.0.*",
-        "vich/uploader-bundle": "^1.13"
+        "vich/uploader-bundle": "^1.13",
+      "ext-json": "*"
     },
+    "minimum-stability": "dev",
+    "prefer-stable" : true,
     "require-dev": {
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.14",
@@ -81,7 +84,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "5.0.*"
+            "require": "4.0.*"
         }
     }
 }
