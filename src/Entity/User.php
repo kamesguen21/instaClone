@@ -93,16 +93,17 @@ class User implements UserInterface
     private $saved_Posts;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Follow", mappedBy="follower", orphanRemoval=true)
-     */
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="following")
+     **/
     private $followers;
-
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Follow", mappedBy="following", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity="User", inversedBy="followers")
+     * @ORM\JoinTable(name="followers",
+     * joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     * inverseJoinColumns={@ORM\JoinColumn(name="following_user_id", referencedColumnName="id")}
+     * )
      */
-    private $Followings;
-
-
+    private $following;
     public function __construct()
     {
         $this->user_photos = new ArrayCollection();
@@ -110,11 +111,95 @@ class User implements UserInterface
         $this->comments = new ArrayCollection();
         $this->roles = array('ROLE_USER');
         $this->saved_Posts = new ArrayCollection();
-        $this->followers = new ArrayCollection();
-        $this->Followings = new ArrayCollection();
+        $this->followers = new ArrayCollection;
+        $this->following = new ArrayCollection;
 
     }
 
+    /**
+     * Return the Users this User is following
+     *
+     * @return ArrayCollection
+     */
+    public function getFollowings()
+    {
+        return $this->following;
+    }
+    /**
+     * Return the User’s followers
+     *
+     * @return ArrayCollection
+     */
+    public function getFollowers()
+    {
+        return $this->followers;
+    }
+    /**
+     * Follow another User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function follow(User $user)
+    {
+        $this->following[] = $user;
+
+        $user->followedBy($this);
+    }
+
+    /**
+     * Set followed by User
+     *
+     * @param User $user
+     * @return void
+     */
+    private function followedBy(User $user)
+    {
+        $this->followers[] = $user;
+    }
+    /**
+     * Unfollow a User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function unfollow(User $user)
+    {
+        $this->following->removeElement($user);
+
+        $user->unfollowedBy($this);
+    }
+    /**
+     * Unfollow a User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function isFollowing(User $user)
+    {
+       return $this->following->contains($user);
+    }
+    /**
+     * Unfollow a User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function isFollowedBy(User $user)
+    {
+       return $this->followers->contains($user);
+    }
+
+    /**
+     * Set unfollowed by a User
+     *
+     * @param User $user
+     * @return void
+     */
+    private function unfollowedBy(User $user)
+    {
+        $this->followers->removeElement($user);
+    }
     public function __toString()
     {
         return $this->getUserName() . $this->getPasswordHash() . $this->getPassword() . $this->getEmail();
@@ -434,65 +519,5 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|Follow[]
-     */
-    public function getFollowers(): Collection
-    {
-        return $this->followers;
-    }
 
-    public function addFollower(Follow $follower): self
-    {
-        if (!$this->followers->contains($follower)) {
-            $this->followers[] = $follower;
-            $follower->setFollower($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollower(Follow $follower): self
-    {
-        if ($this->followers->contains($follower)) {
-            $this->followers->removeElement($follower);
-            // set the owning side to null (unless already changed)
-            if ($follower->getFollower() === $this) {
-                $follower->setFollower(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Follow[]
-     */
-    public function getFollowings(): Collection
-    {
-        return $this->Followings;
-    }
-
-    public function addFollowing(Follow $following): self
-    {
-        if (!$this->Followings->contains($following)) {
-            $this->Followings[] = $following;
-            $following->setFollowing($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollowing(Follow $following): self
-    {
-        if ($this->Followings->contains($following)) {
-            $this->Followings->removeElement($following);
-            // set the owning side to null (unless already changed)
-            if ($following->getFollowing() === $this) {
-                $following->setFollowing(null);
-            }
-        }
-
-        return $this;
-    }
 }

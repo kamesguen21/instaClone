@@ -11,6 +11,8 @@
   "dependencies": {
     "core-js": "^3.6.4",
     "encore": "./assets/js/encore-master/",
-    "file": "^0.2.2"
+    "file": "^0.2.2",
+    "infinite-scroll": "^3.0.6",
+    "moment": "^2.24.0"
   }
 }

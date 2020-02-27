@@ -217,10 +217,8 @@ class ProfileController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
         $appUser = $entityManager->getReference('App\Entity\User', $request->request->get('app_user'));
         $user = $entityManager->getReference('App\Entity\User', $request->request->get('user'));
-        $follow = new Follow();
-        $follow->setFollower($user);
-        $follow->setFollowing($appUser);
-        $entityManager->persist($follow);
+        $appUser->follow($user);
+        $entityManager->persist($appUser);
         $entityManager->flush();
         return $this->json(['success' => true]);
     }
@@ -236,14 +234,9 @@ class ProfileController extends AbstractController
         /** @var User $user */
 
         $entityManager = $this->getDoctrine()->getManager();
-        $FollowRepository = $this->getDoctrine()->getRepository(Follow::class);
-
         $appUser = $entityManager->getReference('App\Entity\User', $request->request->get('app_user'));
         $user = $entityManager->getReference('App\Entity\User', $request->request->get('user'));
-        $follow = $FollowRepository->findOneByFollowerAndFollowing($appUser->getId(), $user->getId());
-        $user->removeFollower($follow);
-        $appUser->removeFollowing($follow);
-        $entityManager->persist($user);
+        $appUser->unfollow($user);
         $entityManager->persist($appUser);
         $entityManager->flush();
         return $this->json(['success' => true]);
@@ -263,15 +256,15 @@ class ProfileController extends AbstractController
         $user = $entityManager->getReference('App\Entity\User', $request->request->get('user'));
         $followers = [];
         $followings = [];
-        foreach ($user->getFollowers() as $key => $follow) {
-            $followers[$key]['id'] = $follow->getFollower()->getId();
-            $followers[$key]['name'] = $follow->getFollower()->getUserName();
-            $followers[$key]['pic'] = $follow->getFollower()->getProfilePicture() ? $follow->getFollower()->getProfilePicture()->getSrc() : '/build/user-avatar.svg';
+        foreach ($user->getFollowers() as $key => $follower) {
+            $followers[$key]['id'] = $follower->getId();
+            $followers[$key]['name'] = $follower->getUserName();
+            $followers[$key]['pic'] = $follower->getProfilePicture() ? $follower->getProfilePicture()->getSrc() : '/build/user-avatar.svg';
         }
-        foreach ($user->getFollowings() as $key => $follow) {
-            $followings[$key]['id'] = $follow->getFollower()->getId();
-            $followings[$key]['name'] = $follow->getFollower()->getUserName();
-            $followings[$key]['pic'] = $follow->getFollower()->getProfilePicture() ? $follow->getFollower()->getProfilePicture()->getSrc() : '/build/user-avatar.svg';
+        foreach ($user->getFollowings() as $key => $following) {
+            $followings[$key]['id'] = $following->getId();
+            $followings[$key]['name'] = $following->getUserName();
+            $followings[$key]['pic'] = $following->getProfilePicture() ? $following->getProfilePicture()->getSrc() : '/build/user-avatar.svg';
         }
         return $this->json(['success' => true, 'followers' => $followers, 'followings' => $followings]);
     }

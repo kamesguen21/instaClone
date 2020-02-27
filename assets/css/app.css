@@ -257,7 +257,7 @@ body {
     position: relative;
     display: inline-block; /* Make the width of box same as image */
 }
-.box .text{
+.box .box-text{
     position: absolute;
     z-index: 999;
     margin: 0 auto;
@@ -269,6 +269,9 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.3);
 }
-.box .text.content{
-    margin-top: 40%;
+.box-text{
+    opacity: 0;
+}
+.box-text:hover{
+    opacity: 1;
 }

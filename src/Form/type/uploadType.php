@@ -22,9 +22,9 @@ class uploadType extends AbstractType
             'download_uri' => true,
             'image_uri' => true,
             'asset_helper' => true,
-        ])->add('caption', TextType::class, array('required' => true, 'label' => 'Caption', 'attr' => array(
+        ])->add('caption', TextType::class, array('required' => false, 'label' => 'Caption', 'attr' => array(
             'placeholder' => 'Caption'
-        )))->add('tagsText', TextType::class, array('required' => true, 'label' => 'Tags', 'attr' => array(
+        )))->add('tagsText', TextType::class, array('required' => false, 'label' => 'Tags', 'attr' => array(
             'placeholder' => 'Tags'
         )))->add('setAsProfile', CheckboxType::class,array('required' => false, 'label' => 'set as profile picture'));
 

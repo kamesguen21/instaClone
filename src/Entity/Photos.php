@@ -271,6 +271,18 @@ class Photos
         return $this->hashtags;
     }
 
+    /**
+     * @return String
+     */
+    public function getHashtagsAsString(): String
+    {
+        $text = '';
+        foreach ($this->hashtags as $tag) {
+            $text .= '#' . $tag->getText() . ' ';
+        }
+        return $text;
+    }
+
     public function addHashtag(Hashtag $hashtag): self
     {
         if (!$this->hashtags->contains($hashtag)) {

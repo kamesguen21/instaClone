@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}@{{ user.getUserName() }} {% endblock %}
-
 {% block body %}
     {% block javascripts %}
         {{ encore_entry_script_tags('profile') }}
@@ -39,16 +38,13 @@
                             <h1 class="not-logged-in"> {{ user.userName }}</h1>
                         </div>
                         <div class="col">
-                            <button class="btn btn-secondary">Edit Profile</button>
-                        </div>
-                        <div class="col">
                             {% if  app.user.getId() is same as(user.getId()) %}
-                                <button type="button" class="btn btn-secondary" data-toggle="modal"
+                                <button type="button" class="btn btn-secondary text-center" data-toggle="modal"
                                         data-target="#newpostmodal">
                                     post
                                 </button>
                             {% else %}
-                                <button type="button" class="btn btn-info follow" id="follow" data-user-id="{{user.getId()}}">
+                                <button type="button" class="btn btn-info follow mt-2" id="follow" data-user-id="{{user.getId()}}">
                                     Follow
                                 </button>
                             {% endif %}
@@ -56,17 +52,16 @@
 
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
+                    <div class="row mt-3">
+                        <div class="col"  >
                             {{ user.UserPhotos|length }} posts
                         </div>
-                        <div class="col">
+                        <div class="col" data-toggle="modal"  data-target="#followers-modal"  >
                             {{ user.followers|length }} followers
                         </div>
-                        <div class="col">
+                        <div class="col"  data-toggle="modal" data-target="#following-modal">
                             {{ user.followings|length }} following
                         </div>
-
                     </div>
                     <div class="row">
                         <p>{{ user.bio }} </p>
@@ -101,12 +96,31 @@
             </div>
         </div>
         <div class="row">
-            {% for pic in user.getUserPhotos() %}
+            {% for pic in user.getUserPhotos()|reverse %}
                 <div class="col-4 mb-3 text-center">
-                    <img src="{{ vich_uploader_asset(pic, 'imageFile','App\\Entity\\Photos') }}"
-                         alt="logo" class="profile-posts" id="profile_post_{{ loop.index }}"
-                         data-index="{{ loop.index }}" data-first="{{ loop.first }}" data-last="{{ loop.last }}"
-                         data-pic-id="{{ pic.getId() }}">
+                    <div class="box">
+                        <img src="{{ vich_uploader_asset(pic, 'imageFile','App\\Entity\\Photos') }}"
+                             alt="logo" class="profile-posts" id="profile_post_{{ loop.index }}" data-box-id="box_text_{{ loop.index }}">
+                        <div data-src="{{ vich_uploader_asset(pic, 'imageFile','App\\Entity\\Photos') }}" class="box-text" id="box_text_{{ loop.index }}" data-img-id="profile_post_{{ loop.index }}" data-index="{{ loop.index }}" data-first="{{ loop.first }}" data-last="{{ loop.last }}" data-pic-id="{{ pic.getId() }}" data-caption="{{ pic.getCaption() }}" data-tags="{{ pic.getHashtagsAsString() }}">
+                            <h6 style="margin-top: 40%" class="text-light">
+                                <span>{{ pic.getLikes()|length }}</span>
+                                <svg aria-label="Like" class="_8-yf5 " fill="#ffffff" height="24"
+                                     viewBox="0 0 48 48" width="18">
+                                    <path clip-rule="evenodd"
+                                          d="M35.3 35.6c-9.2 8.2-9.8 8.9-11.3 8.9s-2.1-.7-11.3-8.9C6.5 30.1.5 25.6.5 17.8.5 9.9 6.4 3.5 13.7 3.5 20.8 3.5 24 8.8 24 8.8s3.2-5.3 10.3-5.3c7.3 0 13.2 6.4 13.2 14.3 0 7.8-6.1 12.3-12.2 17.8z"
+                                          fill-rule="evenodd"></path>
+                                </svg>
+                                <span>{{ pic.getComments()|length }}</span>
+                                <svg aria-label="Comment" class="_8-yf5 " fill="#ffffff" height="24"
+                                     viewBox="0 0 48 48" width="18">
+                                    <path clip-rule="evenodd"
+                                          d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z"
+                                          fill-rule="evenodd"></path>
+                                </svg>
+                            </h6>
+                        </div>
+                    </div>
+
                 </div>
             {% endfor %}
         </div>
@@ -133,6 +147,94 @@
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
                 {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="followers-modal" tabindex="-1" role="dialog" aria-labelledby="followers-modal"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Followers</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                    {% for follower in user.getFollowers() %}
+                        <div class="row">
+                            <div class="col">
+                                {% if follower.getProfilePicture() %}
+                                    <img src="{{ vich_uploader_asset(follower.getProfilePicture(), 'imageFile','App\\Entity\\Photos') }}"
+                                         alt="logo" class="rounded-circle  thumbnail-pic">
+                                {% else %}
+                                    <img src="{{ asset('build/user-avatar.svg') }}" alt="logo"
+                                         class="rounded-circle thumbnail-pic">
+                                {% endif %}
+                                <h6 class="text-dark">{{ follower.getUserName() }}</h6>
+                            </div>
+                            <div class="col">
+                                {% if  app.user.getId() is same as(follower.getId())  %}
+                                    <h4>You</h4>
+                                {% elseif (app.user.isFollowing(follower)) %}
+                                    <button type="button" class="btn btn-info m-follow mt-2 Following" data-user-id="{{follower.getId()}}" data-following="{{app.user.isFollowing(follower)}}">
+                                        Following
+                                    </button>
+                                 {% else %}
+                                     <button type="button" class="btn btn-info m-follow mt-2" data-user-id="{{follower.getId()}}" data-following="{{app.user.isFollowing(follower)}}">
+                                         Follow
+                                     </button>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="following-modal" tabindex="-1" role="dialog" aria-labelledby="following-modal"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Followers</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                    {% for following in user.getFollowings() %}
+                        <div class="row">
+                            <div class="col">
+                                {% if following.getProfilePicture() %}
+                                    <img src="{{ vich_uploader_asset(following.getProfilePicture(), 'imageFile','App\\Entity\\Photos') }}"
+                                         alt="logo" class="rounded-circle  thumbnail-pic">
+                                {% else %}
+                                    <img src="{{ asset('build/user-avatar.svg') }}" alt="logo"
+                                         class="rounded-circle thumbnail-pic">
+                                {% endif %}
+                                <h6 class="text-dark">{{ following.getUserName() }}</h6>
+                            </div>
+                            <div class="col">
+                                {% if app.user.isFollowing(following) %}
+                                    <button type="button" class="btn btn-info m-follow mt-2 Following" data-user-id="{{following.getId()}}" data-following="{{app.user.isFollowing(following)}}">
+                                        Following
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="btn btn-info m-follow mt-2" data-user-id="{{following.getId()}}" data-following="{{app.user.isFollowing(following)}}">
+                                        Follow
+                                    </button>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -163,8 +265,7 @@
                                                      class="rounded-circle thumbnail-pic">
                                             {% endif %}
                                             <span class="font-weight-bold">{{ user.getUserName() }}</span>
-                                            {% if not app.user.getId() is same as(user.getId()) %}         <a href="" class="follow" >Follow</a>    {% endif %}
-                                            <span class="font-weight-bold" id="caption"></span>
+                                            <span style="display: block;" id="caption"></span>
                                             <span class="text-info" id="tags"></span>
                                             <hr>
                                         </div>

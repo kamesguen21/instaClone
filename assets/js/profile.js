@@ -17,14 +17,16 @@ $(document).ready(function () {
     $('.not-logged-in').click(function () {
         console.log('dsfdsf');
     });
-    $('.profile-posts').each(function () {
+    $('.box-text').each(function () {
         const index = $(this).attr('data-index');
         profileData[index] = {
             'id': ($(this).attr('id')),
-            'src': ($(this).attr('src')),
+            'src': ($(this).attr('data-src')),
             'first': ($(this).attr('data-first')),
             'last': ($(this).attr('data-last')),
             'picId': ($(this).attr('data-pic-id')),
+            'caption': ($(this).attr('data-caption')),
+            'tags': ($(this).attr('data-tags')),
         };
         postInfo[index] = {
             'id': ($(this).attr('id')),
@@ -56,11 +58,13 @@ $(document).ready(function () {
     $('#prev').css("top", $(window).height() / 2);
     $('#next').css("top", $(window).height() / 2);
     $('#comments_container').css("height", $(window).height() - 250 + 'px');
-    $('.profile-posts').click(function () {
+    $('.box-text').click(function () {
         const data = profileData[$(this).attr('data-index')];
         $('#actions-util').attr('data-photo', data['picId']);
         current = Number($(this).attr('data-index'));
         $('#modal-img').attr('src', data['src']);
+        $('#tags').html(data['tags']);
+        $('#caption').html(data['caption']);
         $('#postModal').modal('show');
         if (!data['first']) {
             $('#prev').show();
@@ -87,6 +91,8 @@ $(document).ready(function () {
             const data = profileData[current];
             $('#actions-util').attr('data-photo', data['picId']);
             $('#modal-img').attr('src', data['src']);
+            $('#tags').html(data['tags']);
+            $('#caption').html(data['caption']);
             if (data['first']) {
                 $(this).hide();
             }
@@ -108,6 +114,8 @@ $(document).ready(function () {
         const data = profileData[current];
         $('#actions-util').attr('data-photo', data['picId']);
         $('#modal-img').attr('src', data['src']);
+        $('#tags').html(data['tags']);
+        $('#caption').html(data['caption']);
         if (data['last']) {
             $(this).hide();
         }
@@ -225,18 +233,34 @@ $(document).ready(function () {
     $('.follow').each(function () {
         $(this).click(function () {
             if (followed) {
-                unfollow(function () {
+                unfollow(null,function () {
                     followed = false;
                     $('.follow').each(function () {
                         $(this).html('follow');
                     });
                 });
             } else {
-                follow(function () {
+                follow(null,function () {
                     followed = true;
                     $('.follow').each(function () {
                         $(this).html('following');
                     });
+                })
+            }
+        })
+    });
+    $('.m-follow').each(function () {
+        $(this).click(function () {
+            const self = this;
+            if ($(this).attr('data-following') && ($(this).attr('data-following') == true || $(this).attr('data-following') == 1)) {
+                unfollow($(self).attr('data-user-id'), function () {
+                    $(self).html('follow');
+                    $(self).attr('data-following', false);
+                });
+            } else {
+                follow($(self).attr('data-user-id'), function () {
+                    $(self).html('following');
+                    $(self).attr('data-following', true);
                 })
             }
         })
@@ -258,7 +282,7 @@ $(document).ready(function () {
                     follows['followers'] = res.followers;
                     follows['followings'] = res.followings;
                     followed = follows['followers'].find(function (item) {
-                        return item.id === appUserId;
+                        return item.id === Number(appUserId);
                     });
                     if (followed) {
                         $('.follow').each(function () {
@@ -277,9 +301,10 @@ $(document).ready(function () {
         });
     }
 
-    function follow(callback) {
+    function follow(modalUserId, callback) {
+
         const data = {
-            'user': userId,
+            'user': modalUserId ? modalUserId : userId,
             'app_user': appUserId,
         };
         $.ajax({
@@ -300,9 +325,9 @@ $(document).ready(function () {
         });
     }
 
-    function unfollow(callback) {
+    function unfollow(modalUserId,callback) {
         const data = {
-            'user': userId,
+            'user': modalUserId ? modalUserId : userId,
             'app_user': appUserId,
         };
         $.ajax({
