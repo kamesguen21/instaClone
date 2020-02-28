@@ -98,7 +98,7 @@ class ProfileController extends AbstractController
         $photo->addLike($like);
         $entityManager->persist($photo);
         $entityManager->flush();
-        return $this->json(['success' => true]);
+        return $this->json(['success' => true, 'id' => $like->getId()]);
     }
 
     /**
@@ -110,11 +110,13 @@ class ProfileController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
         /** @var \App\Entity\Photos $photo */
+        /** @var \App\Entity\Likes $like */
         $photoId = $request->request->get('photo_id');
         $like = $request->request->get('id');
         $photo = $entityManager->getReference('App\Entity\Photos', $photoId);
         $like = $entityManager->getReference('App\Entity\Likes', $like);
         $photo->removeLike($like);
+        $like->getUserId()->removeLike($like);
         $entityManager->persist($photo);
         $entityManager->flush();
         return $this->json(['success' => true]);

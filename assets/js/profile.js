@@ -2,6 +2,7 @@ const $ = require('jquery');
 const moment = require('moment');
 require('bootstrap');
 $(document).ready(function () {
+
     let profileData = {};
     let postInfo = {};
     let follows = {

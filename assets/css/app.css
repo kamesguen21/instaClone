@@ -275,3 +275,93 @@ body {
 .box-text:hover{
     opacity: 1;
 }
+.home-pic{
+    height: 50px;
+    width: 50px;
+}
+.post-user-pic{
+    height: 35px;
+    width: 35px;
+}
+.bg-image {
+    /* The image used */
+    /* Add the blur effect */
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+
+    /* Full height */
+    height: 100%;
+    width: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.bg-text {
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+    color: white;
+    font-weight: bold;
+    border: 3px solid #f1f1f1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 80%;
+    padding: 20px;
+    text-align: center;
+}
+.post-pic{
+    height: 100%;
+    width: 100%;
+}
+.loader-ellips {
+    font-size: 20px; /* change size here */
+    position: relative;
+    width: 4em;
+    height: 1em;
+    margin: 10px auto;
+}
+
+.loader-ellips__dot {
+    display: block;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.5em;
+    background: #555; /* change color here */
+    position: absolute;
+    animation-duration: 0.5s;
+    animation-timing-function: ease;
+    animation-iteration-count: infinite;
+}
+
+.loader-ellips__dot:nth-child(1),
+.loader-ellips__dot:nth-child(2) {
+    left: 0;
+}
+.loader-ellips__dot:nth-child(3) { left: 1.5em; }
+.loader-ellips__dot:nth-child(4) { left: 3em; }
+
+@keyframes reveal {
+    from { transform: scale(0.001); }
+    to { transform: scale(1); }
+}
+
+@keyframes slide {
+    to { transform: translateX(1.5em) }
+}
+
+.loader-ellips__dot:nth-child(1) {
+    animation-name: reveal;
+}
+
+.loader-ellips__dot:nth-child(2),
+.loader-ellips__dot:nth-child(3) {
+    animation-name: slide;
+}
+
+.loader-ellips__dot:nth-child(4) {
+    animation-name: reveal;
+    animation-direction: reverse;
+}
