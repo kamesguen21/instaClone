@@ -69,7 +69,6 @@ class ProfileController extends AbstractController
             }
             $entityManager->flush();
             $user->setProfilePicture(null);
-
             return $this->redirectToRoute('profile', ['id' => $user->getId()]);
 
         }

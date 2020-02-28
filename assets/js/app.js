@@ -12,50 +12,56 @@ import '../css/app.css';
 // Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
 // import $ from 'jquery';
 const $ = require('jquery');
-
 require('bootstrap');
 $(document).ready(function () {
-    $(document).on("shown.bs.popover",'[data-toggle="popover"]', function(){
-        $(this).attr('someattr','1');
+
+    $(document).on("shown.bs.popover", '[data-toggle="popover"]', function () {
+        $(this).attr('someattr', '1');
     });
-    $(document).on("hidden.bs.popover",'[data-toggle="popover"]', function(){
-        $(this).attr('someattr','0');
+    $(document).on("hidden.bs.popover", '[data-toggle="popover"]', function () {
+        $(this).attr('someattr', '0');
     });
     $(document).on('click', function (e) {
         $('[data-toggle="popover"],[data-original-title]').each(function () {
             //the 'is' for buttons that trigger popups
             //the 'has' for icons within a button that triggers a popup
             if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-                if($(this).attr('someattr')=="1"){
+                if ($(this).attr('someattr') == "1") {
                     $('#search_input').popover("hide");
                 }
             }
         });
     });
+    $('#search_input').popover({
+        content: '',
+        trigger: 'manual',
+        animation: true
+    });
+    var popover = $('#search_input').data('bs.popover');
 
-    $('#search_input').keypress(function () {
-        const data = {
-            'term': $('#search_input').val()
-        };
-        $.ajax({
-            url: '/actions/search',
-            type: 'POST',
-            dataType: 'json',
-            data: data,
+    $('#search_input').keyup(function () {
+        if ($('#search_input').val() !== '' && $('#search_input').val() !== ' ' && $('#search_input').val() !== '  ') {
+            const data = {
+                'term': $('#search_input').val()
+            };
+            $.ajax({
+                url: '/actions/search',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
 
-            success: function (res) {
-                console.log(res);
-                $('#search_input').popover({
-                    content: prepareContent(res.users),
-                    trigger: 'manual',
-                    animation:true
-                });
-                $('#search_input').popover('show');
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log('Ajax request failed.');
-            }
-        });
+                success: function (res) {
+                    console.log(res);
+                    popover.config.content = (prepareContent(res.users));
+                    $('#search_input').popover('show');
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Ajax request failed.');
+                }
+            });
+        } else {
+            $('#search_input').popover('hide');
+        }
     });
 
     function prepareContent(users) {

@@ -22,6 +22,7 @@ $(document).ready(function () {
     like();
     commentAction();
     commentSubmit();
+
     function commentAction() {
         $('.comment-action').off();
         $('.comment-action').on('click', function () {
@@ -63,12 +64,12 @@ $(document).ready(function () {
     }
 
     function addComment(elm, data) {
-        const html = '     <a class="text-dark" href="/profile/' + appUserId + '">\n' +
+        const html = '  <div class="row mt-1 mb-1"><div class="col">   <a class="text-dark" href="/profile/' + appUserId + '">\n' +
             '                                                <img src="' + $('#app_user_photo').attr('src') + '" class="rounded-circle post-user-pic" alt="">\n' +
             '                                                <span class="h6 font-weight-bolder">' + $('#app_user_name').attr('data-name') + '</span>\n' +
             '                                            </a>\n' +
             '                                            <span>' + data['text'] + '</span>\n' +
-            '                                            <span class="text-secondary text-capitalize">just now</span>';
+            '                                            <span class="text-secondary text-capitalize">just now</span></div></div>';
         $(elm).append(html);
     }
 
@@ -77,7 +78,10 @@ $(document).ready(function () {
         $('.p-like').on('click', function () {
             const like = $(this).attr('data-like');
             const self = $(this);
+            let likes = $(this).attr('data-likes-number');
+            const likesContainer = $('#' + $(this).attr('data-likes-container'));
             if (like) {
+                likes = Number(likes) - 1;
                 const data = {
                     'id': like,
                     'photo_id': $(this).attr('data-pic-id')
@@ -93,6 +97,9 @@ $(document).ready(function () {
                         if (res.success) {
                             $(self).html(unlikedSvg);
                             $(self).attr('data-like', null);
+                            $(self).attr('data-like', null);
+                            $(self).attr('data-likes-number',likes);
+                            $(likesContainer).html(likes + 'likes');
                         }
                     },
                     error: function (xhr, textStatus, errorThrown) {
@@ -100,6 +107,7 @@ $(document).ready(function () {
                     }
                 });
             } else {
+                likes = Number(likes) + 1;
                 const data = {
                     'user_id': appUserId,
                     'photo_id': $(this).attr('data-pic-id')
@@ -115,6 +123,8 @@ $(document).ready(function () {
                         if (res.success) {
                             $(self).html(likedSvg);
                             $(self).attr('data-like', res.id);
+                            $(likesContainer).html(likes + 'likes');
+                            $(self).attr('data-likes-number',likes);
 
                         }
                     },

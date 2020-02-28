@@ -29,7 +29,7 @@ class SearchController extends AbstractController
             $data[$key]['name'] = $user->getUserName();
             $data[$key]['pic'] = $user->getProfilePicture() ? $user->getProfilePicture()->getSrc() : '/build/user-avatar.svg';
         }
-        return $this->json(['success' => true, 'users' => $data]);
+        return $this->json(['success' => $term, 'users' => $data]);
 
     }
 }
