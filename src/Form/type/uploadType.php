@@ -22,6 +22,9 @@ class uploadType extends AbstractType
             'download_uri' => true,
             'image_uri' => true,
             'asset_helper' => true,
+            'attr' => array(
+                'accept' => '.png,.jpg,.jpeg'
+            )
         ])->add('caption', TextType::class, array('required' => false, 'label' => 'Caption', 'attr' => array(
             'placeholder' => 'Caption'
         )))->add('tagsText', TextType::class, array('required' => false, 'label' => 'Tags', 'attr' => array(

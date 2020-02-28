@@ -27,7 +27,7 @@
                                 <div class="row">
                                     <div class="col-1">
                                         {% if pic['like'] is null %}
-                                            <a class="wpO6b p-like" type="button" data-pic-id="{{ pic['id'] }}">
+                                            <a class="wpO6b p-like" type="button" data-pic-id="{{ pic['id'] }}" data-likes-number="{{ pic['likes'] }}" data-likes-container="likes_{{ page }}_{{ loop.index }}">
                                                 <svg aria-label="Like" class="_8-yf5 " fill="#262626" height="24"
                                                      viewBox="0 0 48 48" width="24">
                                                     <path clip-rule="evenodd"
@@ -62,18 +62,27 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col"><span class="text-dark">{{ pic['likes'] }} likes</span></div>
+                                    <div class="col"><span class="text-dark" id="likes_{{ page }}_{{ loop.index }}">{{ pic['likes'] }} likes</span></div>
                                 </div>
                                 <div class="row">
-                                    <div class="col" id="comments_container_{{ page }}_{{ loop.index }}">
-                                        {% for comment in pic['comments'] %}
-                                            <a class="text-dark" href="/profile/{{ comment['userId'] }}">
-                                                <img src="{{ comment['pic'] }}" class="rounded-circle post-user-pic" alt="">
-                                                <span class="h6 font-weight-bolder">{{ comment['name'] }}</span>
-                                            </a>
-                                            <span>{{ comment['text'] }}</span>
-                                            <span class="text-secondary text-capitalize">{{ comment['date'] }}</span>
-                                        {% endfor %}
+                                    <div class="col">
+                                        <div class="container" id="comments_container_{{ page }}_{{ loop.index }}">
+                                            {% for comment in pic['comments'] %}
+                                            <div class="row mt-1 mb-1">
+                                               <div class="col">
+                                                   <a class="text-dark" href="/profile/{{ comment['userId'] }}">
+                                                       <img src="{{ comment['pic'] }}" class="rounded-circle post-user-pic" alt="">
+                                                       <span class="h6 font-weight-bolder">{{ comment['name'] }}</span>
+                                                   </a>
+                                                   <span>{{ comment['text'] }}</span>
+                                                   <span class="text-secondary text-capitalize">{{ comment['date'] }}</span>
+                                               </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+
+
+
                                     </div>
                                 </div>
                                 <div class="row">
