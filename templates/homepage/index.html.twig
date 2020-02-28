@@ -1,0 +1,144 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    {% block javascripts %}
+        {{ encore_entry_script_tags('homepage') }}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+    {% if pages is same as(0) %}
+        <div class="pagination__next" hidden>{{ pages }}</div>
+    {% endif %}
+    <input type="hidden" id="actions-util" data-app-user="{{ app.user.getId() }}">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-5 offset-2" id="pagination-container">
+                {% for pic in data %}
+                    <div class="card mb-5 paginated-post">
+                        <div class="card-header"><a href="/profile/{{ pic['user_id'] }}"><img src="{{ pic['user_pic'] }}" class="rounded-circle
+                                post-user-pic"
+                                alt=""> <span class="h9">{{ pic['user_name'] }}</span></a>
+                            <span class="text-secondary text-capitalize float-right">{{ pic['date'] }}</span>
+                        </div>
+                        <div class="card-body p-0"><img src="{{ pic['url'] }}" class="post-pic" alt=""></div>
+                        <div class="card-footer">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-1">
+                                        {% if pic['like'] is null %}
+                                            <a class="wpO6b p-like" type="button" data-pic-id="{{ pic['id'] }}">
+                                                <svg aria-label="Like" class="_8-yf5 " fill="#262626" height="24"
+                                                     viewBox="0 0 48 48" width="24">
+                                                    <path clip-rule="evenodd"
+                                                          d="M34.3 3.5C27.2 3.5 24 8.8 24 8.8s-3.2-5.3-10.3-5.3C6.4 3.5.5 9.9.5 17.8s6.1 12.4 12.2 17.8c9.2 8.2 9.8 8.9 11.3 8.9s2.1-.7 11.3-8.9c6.2-5.5 12.2-10 12.2-17.8 0-7.9-5.9-14.3-13.2-14.3zm-1 29.8c-5.4 4.8-8.3 7.5-9.3 8.1-1-.7-4.6-3.9-9.3-8.1-5.5-4.9-11.2-9-11.2-15.6 0-6.2 4.6-11.3 10.2-11.3 4.1 0 6.3 2 7.9 4.2 3.6 5.1 1.2 5.1 4.8 0 1.6-2.2 3.8-4.2 7.9-4.2 5.6 0 10.2 5.1 10.2 11.3 0 6.7-5.7 10.8-11.2 15.6z"
+                                                          fill-rule="evenodd"></path>
+                                                </svg>
+                                            </a>
+                                        {% else %}
+                                            <a class="wpO6b p-like" type="button" data-pic-id="{{ pic['id'] }}"
+                                               data-like="{{ pic['like'] }}">
+                                                <svg aria-label="Unlike" class="_8-yf5 " fill="#ed4956" height="24" viewBox="0 0 48 48" width="24"><path clip-rule="evenodd" d="M35.3 35.6c-9.2 8.2-9.8 8.9-11.3 8.9s-2.1-.7-11.3-8.9C6.5 30.1.5 25.6.5 17.8.5 9.9 6.4 3.5 13.7 3.5 20.8 3.5 24 8.8 24 8.8s3.2-5.3 10.3-5.3c7.3 0 13.2 6.4 13.2 14.3 0 7.8-6.1 12.3-12.2 17.8z" fill-rule="evenodd"></path></svg>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col">
+                                        <a class="wpO6b comment-action" data-input-id="comment_input_{{ page }}_{{ loop.index }}" type="button">
+                                            <svg aria-label="Comment" class="_8-yf5 " fill="#262626" height="24"
+                                                 viewBox="0 0 48 48" width="24">
+                                                <path clip-rule="evenodd"
+                                                      d="M47.5 46.1l-2.8-11c1.8-3.3 2.8-7.1 2.8-11.1C47.5 11 37 .5 24 .5S.5 11 .5 24 11 47.5 24 47.5c4 0 7.8-1 11.1-2.8l11 2.8c.8.2 1.6-.6 1.4-1.4zm-3-22.1c0 4-1 7-2.6 10-.2.4-.3.9-.2 1.4l2.1 8.4-8.3-2.1c-.5-.1-1-.1-1.4.2-1.8 1-5.2 2.6-10 2.6-11.4 0-20.6-9.2-20.6-20.5S12.7 3.5 24 3.5 44.5 12.7 44.5 24z"
+                                                      fill-rule="evenodd"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    <div class="col text-right">
+                                        <a class="wpO6b " id="save-action" type="button">
+                                            <svg aria-label="Save" class="_8-yf5 " fill="#262626" height="24"
+                                                 viewBox="0 0 48 48" width="24">
+                                                <path d="M43.5 48c-.4 0-.8-.2-1.1-.4L24 29 5.6 47.6c-.4.4-1.1.6-1.6.3-.6-.2-1-.8-1-1.4v-45C3 .7 3.7 0 4.5 0h39c.8 0 1.5.7 1.5 1.5v45c0 .6-.4 1.2-.9 1.4-.2.1-.4.1-.6.1zM24 26c.8 0 1.6.3 2.2.9l15.8 16V3H6v39.9l15.8-16c.6-.6 1.4-.9 2.2-.9z"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col"><span class="text-dark">{{ pic['likes'] }} likes</span></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col" id="comments_container_{{ page }}_{{ loop.index }}">
+                                        {% for comment in pic['comments'] %}
+                                            <a class="text-dark" href="/profile/{{ comment['userId'] }}">
+                                                <img src="{{ comment['pic'] }}" class="rounded-circle post-user-pic" alt="">
+                                                <span class="h6 font-weight-bolder">{{ comment['name'] }}</span>
+                                            </a>
+                                            <span>{{ comment['text'] }}</span>
+                                            <span class="text-secondary text-capitalize">{{ comment['date'] }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <form class="X7cDz" method="POST">
+                                                <textarea aria-label="Add a comment…" placeholder="Add a comment…"
+                                                          class="Ypffh" autocomplete="off" autocorrect="off"
+                                                          id="comment_input_{{ page }}_{{ loop.index }}"
+                                                          style="height: 18px;"></textarea>
+                                            <button class="sqdOP yWX7d y3zKF comment_submit" type="button" data-pic-id="{{ pic['id'] }}" data-input-id="comment_input_{{ page }}_{{ loop.index }}" data-comment-container-id="comments_container_{{ page }}_{{ loop.index }}" data-user->Post
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="page-load-status">
+                    <div class="infinite-scroll-request">
+                        <div class="loader-ellips">
+                            <span class="loader-ellips__dot"></span>
+                            <span class="loader-ellips__dot"></span>
+                            <span class="loader-ellips__dot"></span>
+                            <span class="loader-ellips__dot"></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-3 position-fixed" style="left: 60%;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col mt-2 mb-2">
+                            <a href="/profile/{{ user.getId() }}"> {% if user.getProfilePicture() %}
+                                    <img src="{{ vich_uploader_asset(user.getProfilePicture(), 'imageFile','App\\Entity\\Photos') }}"
+                                         alt="logo" class="rounded-circle home-pic" id="app_user_photo">
+                                {% else %}
+                                    <img src="{{ asset('build/user-avatar.svg') }}" alt="logo" id="app_user_photo"
+                                         class="rounded-circle profile-pic">
+                                {% endif %}
+                                <span class="h6" id="app_user_name" data-name="{{ user.getUserName() }}">{{ user.getUserName() }}</span></a>
+
+                        </div>
+                    </div>
+                    <div class="row  mt-2 mb-2">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="text-secondary">Stories</span>
+                                </div>
+                                <div class="card-body p-0">
+                                    <img src="{{ asset('build/stories.png') }}" alt="logo" class="bg-image">
+                                    <div class="bg-text">
+                                        <h5>Coming soon</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}

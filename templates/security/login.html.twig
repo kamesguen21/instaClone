@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <form method="post">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3 text-center already-logged-in-msg">
+               <h2>You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a></h2>
+            </div>
+        {% else %}
+        <div class="container">
+            <div class="row">
+                <div class="col"></div>
+                <div class="col mt-5">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="text-center mb-2">
+                                <img src="{{ asset('build/logo.png') }}" alt="logo" class="register-logo">
+                            </div>
+                            <label for="inputPassword"></label>
+                            <label for="inputEmail"></label>
+                            <input type="email" placeholder="Email" value="{{ last_username }}" name="email"
+                                   id="inputEmail" class="form-control mt-2 mb-2" required autofocus>
+                            <input type="password" placeholder="Password " name="password" id="inputPassword"
+                                   class="form-control  mt-2 mb-2" required>
+                            <input type="hidden" name="_csrf_token"
+                                   value="{{ csrf_token('authenticate') }}"
+                            >
+                            {#
+                                Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+                                See https://symfony.com/doc/current/security/remember_me.html
+
+                                <div class="checkbox mb-3">
+                                    <label>
+                                        <input type="checkbox" name="_remember_me"> Remember me
+                                    </label>
+                                </div>
+                            #}
+
+                            <button class="btn btn-lg btn-info register-submit " type="submit">
+                                Sign in
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <span> Don't have an account? <a href="{{ path('user_registration') }}">Sign up </a></span>
+
+                        </div></div>
+                </div>
+                <div class="col"></div>
+            </div>
+
+        </div>
+        {% endif %}
+
+    </form>
+    <footer>
+        <div class="iseBh VWk7Y text-center">
+            <nav class="uxKLF">
+                <ul class="ixdEe">
+                    <li class="K5OFK"><a class="l93RR" href="https://about.instagram.com/about-us"
+                                         rel="nofollow noopener noreferrer" target="_blank">About us</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="https://help.instagram.com/">Help</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="https://instagram-press.com/">Press</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/developer/">API</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/about/jobs/">Jobs</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/legal/privacy/">Privacy</a></li>
+                    <li class="K5OFK"><a class="l93RR _vfM2" href="/legal/terms/">Terms</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/explore/locations/">Directory</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/directory/profiles/">Profiles</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/directory/hashtags/">Hashtags</a></li>
+                    <li class="K5OFK"></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+{% endblock %}

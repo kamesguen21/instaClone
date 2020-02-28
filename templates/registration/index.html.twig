@@ -3,22 +3,89 @@
 {% block title %}Hello RegistrationController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
 
-<div class="example-wrapper">
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-4 offset-1 p-0">
+                <img src="{{ asset('build/register-phone.png') }}" alt="logo" class="register-phone">
+            </div>
+            <div class="col-6 p-0 ">
+                <div class="card register-card">
+                    <div class="card-body">
+                        <div class="text-center mb-2">
+                            <img src="{{ asset('build/logo.png') }}" alt="logo" class="register-logo">
+                        </div>
+                        <h2 class="register-msg">
+                            Sign up to see photos and videos from your friends.
+                        </h2>
+                        <div class="login-form">
+                            {# templates/registration/register.html.twig #}
+                            {{ form_start(form) }}
+                            <div>
+                                {{ form_widget(form.email, { 'attr': {'class': 'form-control mb-2'} }) }}
+                            </div>
+                            <div>
+                                {{ form_widget(form.user_name, { 'attr': {'class': 'form-control mb-2'} }) }}
+                            </div>
+                            <div>
+                                {{ form_widget(form.plainPassword.first, { 'attr': {'class': 'form-control mb-2'} }) }}
+                            </div>
+                            <div>
+                                {{ form_widget(form.plainPassword.second, { 'attr': {'class': 'form-control mb-2 '} }) }}
+                            </div>
+                            <input type="hidden" name="_csrf_token"
+                                   value="{{ csrf_token('authenticate') }}"
+                            >
+                            <button type="submit" class="btn btn-info register-submit">Sign up</button>
+                            {{ form_errors(form.email) }}
+                            {{ form_errors(form.user_name) }}
+                            {{ form_errors(form.plainPassword.first) }}
+                            {{ form_errors(form.plainPassword.second) }}
+                            {{ form_end(form) }}
+                        </div>
+                        <p class="terms">By signing up, you agree to our <strong>Terms</strong> ,<strong> Data
+                                Policy</strong> and <strong>Cookies Policy</strong> .</p>
+                    </div>
+                </div>
+                <div class="card register-card mt-2">
+                    <div class="card-body text-center">
+                        <span> Have an account? <a href="{{ path('app_login') }}">Log in </a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-
-    {# templates/registration/register.html.twig #}
-    {{ form_start(form) }}
-    {{ form_row(form.user_name) }}
-    {{ form_row(form.email) }}
-    {{ form_row(form.plainPassword.first) }}
-    {{ form_row(form.plainPassword.second) }}
-
-    <button type="submit">Register!</button>
-    {{ form_end(form) }}
-</div>
+    </div>
+    <footer>
+        <div class="iseBh VWk7Y text-center">
+            <nav class="uxKLF">
+                <ul class="ixdEe">
+                    <li class="K5OFK"><a class="l93RR" href="https://about.instagram.com/about-us"
+                                         rel="nofollow noopener noreferrer" target="_blank">About us</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="https://help.instagram.com/">Help</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="https://instagram-press.com/">Press</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/developer/">API</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/about/jobs/">Jobs</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/legal/privacy/">Privacy</a></li>
+                    <li class="K5OFK"><a class="l93RR _vfM2" href="/legal/terms/">Terms</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/explore/locations/">Directory</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/directory/profiles/">Profiles</a></li>
+                    <li class="K5OFK"><a class="l93RR" href="/directory/hashtags/">Hashtags</a></li>
+                    <li class="K5OFK"></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
 {% endblock %}

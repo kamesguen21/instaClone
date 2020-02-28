@@ -1,0 +1,24 @@
+{
+  "name": "encore",
+  "version": "0.0.30-beta",
+  "author": "Rob Christian",
+  "description": "A modular MVC framework for node.js.",
+  "main": "./main.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/rm-rf-etc/encore"
+  },
+  "keywords": [
+    "framework",
+    "mvc"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^0.8.4",
+    "easyioc": "^0.1.13",
+    "filefetcher": "0.0.1",
+    "handlebars": "~1.2.0",
+    "lodash": "^4.0.1",
+    "runway": "~3.15.47-beta"
+  }
+}

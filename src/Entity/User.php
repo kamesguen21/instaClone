@@ -48,12 +48,6 @@ class User implements UserInterface
      * @ORM\Column(type="text", nullable=true)
      */
     private $bio;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $profil_pic;
-
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -73,22 +67,6 @@ class User implements UserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Likes", mappedBy="user_id")
      */
     private $likes;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\SavedPhotos", inversedBy="user_id")
-     */
-    private $saved_photos;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Following", mappedBy="user_id")
-     */
-    private $followings;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Follower", mappedBy="user_id")
-     */
-    private $followers;
-
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="user_id")
      */
@@ -99,15 +77,132 @@ class User implements UserInterface
     private $roles;
     private $plainPassword;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true,unique=true)
+     */
+    private $api_token;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Photos", cascade={"persist", "remove"})
+     */
+    private $profile_picture;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Photos")
+     */
+    private $saved_Posts;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="following")
+     **/
+    private $followers;
+    /**
+     * @ORM\ManyToMany(targetEntity="User", inversedBy="followers")
+     * @ORM\JoinTable(name="followers",
+     * joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     * inverseJoinColumns={@ORM\JoinColumn(name="following_user_id", referencedColumnName="id")}
+     * )
+     */
+    private $following;
     public function __construct()
     {
         $this->user_photos = new ArrayCollection();
         $this->likes = new ArrayCollection();
-        $this->followings = new ArrayCollection();
-        $this->followers = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->roles = array('ROLE_USER');
+        $this->saved_Posts = new ArrayCollection();
+        $this->followers = new ArrayCollection;
+        $this->following = new ArrayCollection;
 
+    }
+
+    /**
+     * Return the Users this User is following
+     *
+     * @return ArrayCollection
+     */
+    public function getFollowings()
+    {
+        return $this->following;
+    }
+    /**
+     * Return the User’s followers
+     *
+     * @return ArrayCollection
+     */
+    public function getFollowers()
+    {
+        return $this->followers;
+    }
+    /**
+     * Follow another User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function follow(User $user)
+    {
+        $this->following[] = $user;
+
+        $user->followedBy($this);
+    }
+
+    /**
+     * Set followed by User
+     *
+     * @param User $user
+     * @return void
+     */
+    private function followedBy(User $user)
+    {
+        $this->followers[] = $user;
+    }
+    /**
+     * Unfollow a User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function unfollow(User $user)
+    {
+        $this->following->removeElement($user);
+
+        $user->unfollowedBy($this);
+    }
+    /**
+     * Unfollow a User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function isFollowing(User $user)
+    {
+       return $this->following->contains($user);
+    }
+    /**
+     * Unfollow a User
+     *
+     * @param User $user
+     * @return void
+     */
+    public function isFollowedBy(User $user)
+    {
+       return $this->followers->contains($user);
+    }
+
+    /**
+     * Set unfollowed by a User
+     *
+     * @param User $user
+     * @return void
+     */
+    private function unfollowedBy(User $user)
+    {
+        $this->followers->removeElement($user);
+    }
+    public function __toString()
+    {
+        return $this->getUserName() . $this->getPasswordHash() . $this->getPassword() . $this->getEmail();
     }
 
     public function getPlainPassword()
@@ -169,18 +264,6 @@ class User implements UserInterface
     public function setBio(?string $bio): self
     {
         $this->bio = $bio;
-
-        return $this;
-    }
-
-    public function getProfilPic(): ?string
-    {
-        return $this->profil_pic;
-    }
-
-    public function setProfilPic(?string $profil_pic): self
-    {
-        $this->profil_pic = $profil_pic;
 
         return $this;
     }
@@ -291,79 +374,6 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getSavedPhotos(): ?SavedPhotos
-    {
-        return $this->saved_photos;
-    }
-
-    public function setSavedPhotos(?SavedPhotos $saved_photos): self
-    {
-        $this->saved_photos = $saved_photos;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Following[]
-     */
-    public function getFollowings(): Collection
-    {
-        return $this->followings;
-    }
-
-    public function addFollowing(Following $following): self
-    {
-        if (!$this->followings->contains($following)) {
-            $this->followings[] = $following;
-            $following->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollowing(Following $following): self
-    {
-        if ($this->followings->contains($following)) {
-            $this->followings->removeElement($following);
-            // set the owning side to null (unless already changed)
-            if ($following->getUserId() === $this) {
-                $following->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Follower[]
-     */
-    public function getFollowers(): Collection
-    {
-        return $this->followers;
-    }
-
-    public function addFollower(Follower $follower): self
-    {
-        if (!$this->followers->contains($follower)) {
-            $this->followers[] = $follower;
-            $follower->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollower(Follower $follower): self
-    {
-        if ($this->followers->contains($follower)) {
-            $this->followers->removeElement($follower);
-            // set the owning side to null (unless already changed)
-            if ($follower->getUserId() === $this) {
-                $follower->setUserId(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection|Comment[]
@@ -412,7 +422,7 @@ class User implements UserInterface
      */
     public function getRoles()
     {
-        // TODO: Implement getRoles() method.
+        return $this->roles;
     }
 
     /**
@@ -425,7 +435,7 @@ class User implements UserInterface
      */
     public function getPassword()
     {
-        // TODO: Implement getPassword() method.
+        return $this->getPasswordHash();
     }
 
     /**
@@ -437,7 +447,7 @@ class User implements UserInterface
      */
     public function getSalt()
     {
-        // TODO: Implement getSalt() method.
+        return $this->getPlainPassword();
     }
 
     /**
@@ -448,7 +458,7 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        // TODO: Implement eraseCredentials() method.
+        $this->setPlainPassword(null);
     }
 
     /**
@@ -458,4 +468,56 @@ class User implements UserInterface
     {
         $this->roles = $roles;
     }
+
+    public function getApiToken(): ?string
+    {
+        return $this->api_token;
+    }
+
+    public function setApiToken(?string $api_token): self
+    {
+        $this->api_token = $api_token;
+
+        return $this;
+    }
+
+    public function getProfilePicture(): ?Photos
+    {
+        return $this->profile_picture;
+    }
+
+    public function setProfilePicture(?Photos $profile_picture): self
+    {
+        $this->profile_picture = $profile_picture;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Photos[]
+     */
+    public function getSavedPosts(): Collection
+    {
+        return $this->saved_Posts;
+    }
+
+    public function addSavedPost(Photos $savedPost): self
+    {
+        if (!$this->saved_Posts->contains($savedPost)) {
+            $this->saved_Posts[] = $savedPost;
+        }
+
+        return $this;
+    }
+
+    public function removeSavedPost(Photos $savedPost): self
+    {
+        if ($this->saved_Posts->contains($savedPost)) {
+            $this->saved_Posts->removeElement($savedPost);
+        }
+
+        return $this;
+    }
+
+
 }
